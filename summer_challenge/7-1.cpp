@@ -1,88 +1,90 @@
 #include <iostream>
-#include <vector>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 
-class TrieNode
+struct Node
 {
-public:
-    vector<TrieNode *> children;
-    bool isEnd;
 
-    TrieNode()
+    Node *links[26];
+    bool flag = false;
+
+    bool containsKey(char ch)
     {
-        children = vector<TrieNode *>(26, NULL);
-        isEnd = false;
+        return links[ch - 'a'] != NULL;
+    }
+    void put(char ch, Node *node)
+    {
+        links[ch - 'a'] = node;
+    }
+    Node *get(char ch)
+    {
+        return links[ch - 'a'];
+    }
+    bool setEnd()
+    {
+        flag = true;
+    }
+
+    bool isEnd() { return flag; }
+};
+
+class Trie
+{
+private:
+    Node *root;
+
+public:
+    void insert(string word)
+    {
+        Node *node = root;
+        for (int i = 0; i < word.size(); i++)
+        {
+            if (!node->containsKey(word[i]))
+            {
+                node->put(word[i], new Node());
+            }
+
+            node = node->get(word[i]);
+            node->setEnd();
+        }
+    }
+    bool search(string word)
+    {
+        Node *node = root;
+        for (int i = 0; i < word.size(); i++)
+        {
+            if (!node->containsKey(word[i]))
+            {
+                return false;
+            }
+            node = node->get(word[i]);
+        }
+        return node->isEnd();
     }
 };
 
-void insert(TrieNode *root, const string &word)
-{
-    TrieNode *curr = root;
-    for (char ch : word)
-    {
-        int index = ch - 'a';
-        if (curr->children[index] == NULL)
-        {
-            curr->children[index] = new TrieNode();
-        }
-        curr = curr->children[index];
-    }
-    curr->isEnd = true;
-}
-
-int search(TrieNode *root, const string &word)
-{
-    TrieNode *curr = root;
-    int time = 0;
-    string prefix = "";
-
-    for (char ch : word)
-    {
-        int index = ch - 'a';
-        if (curr->children[index] == NULL)
-        {
-            return -1; // Prefix not found
-        }
-
-        curr = curr->children[index];
-        prefix += ch;
-        if (curr->isEnd || prefix == word)
-        {
-            time += prefix.length();
-            prefix = "";
-        }
-    }
-
-    return time;
-}
-
 int main()
 {
+
     int t;
     cin >> t;
-
     while (t--)
     {
-        int q;
-        cin >> q;
-
-        TrieNode *root = new TrieNode();
-
-        while (q--)
+        Trie trie;
+        int n;
+        cin >> n;
+        for (int i = 0; i < n; i++)
         {
             string s;
             cin >> s;
-
-            int time = search(root, s);
-            if (time == -1)
+            for (int j = 1; j <= s.size(); j++)
             {
-                insert(root, s);
-                time = s.length();
+                if (!trie.search(s.substr(0, j)))
+                {
+                    cout << 1 + s.size() - j << endl;
+                }
             }
-            cout << time << endl;
+            trie.insert(s);
         }
     }
-
-    return 0;
 }
