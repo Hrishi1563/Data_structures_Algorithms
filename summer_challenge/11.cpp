@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+int mod = 1e9 + 7;
 
 long long func(string &str, long long num)
 {
@@ -18,7 +19,7 @@ long long factorial(long long occur)
     if (occur == 0 || occur == 1)
         return 1;
 
-    return factorial(occur - 1) * occur;
+    return (factorial(occur - 1) % mod) * (occur % mod);
 }
 int main()
 {
@@ -31,6 +32,6 @@ int main()
         cin >> str;
         cin >> num;
         long long total_occurenes = func(str, num);
-        cout << factorial(total_occurenes) << endl;
+        cout << factorial(total_occurenes) % mod << endl;
     }
 }
